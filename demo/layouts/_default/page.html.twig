@@ -1,0 +1,83 @@
+{#- Base layout of the demo: Pico CSS (bundled with Cecil), with the Pele partial in the head and a color scheme selector in the header -#}
+<!DOCTYPE html>
+<html lang="{{ site.language }}">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {{- include('partials/metatags.html.twig', {page: page, site: site}, with_context=false) ~}}
+    {{ include('partials/pele.html.twig', {page, site}, with_context = false) }}
+    <style>{% apply minify_css ~%}
+      {{- include('partials/pico.css.twig') ~}}
+      @media (min-width: 1024px) {
+        body > header,
+        body > main,
+        body > footer {
+          max-width: 768px;
+        }
+      }
+      body > header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: var(--pico-spacing);
+      }
+      body > header hgroup {
+        margin: 0;
+      }
+      .site-title {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: var(--pico-h1-color);
+        text-decoration: none;
+      }
+      .header-tools {
+        display: flex;
+        align-items: center;
+        gap: var(--pico-spacing);
+      }
+      .header-tools nav ul {
+        margin: 0;
+      }
+      /* diagrams take the colors of Pico CSS */
+      :root {
+        --pele-bg: var(--pico-background-color);
+        --pele-fg: var(--pico-color);
+        --pele-muted: var(--pico-muted-color);
+        --pele-accent: var(--pico-primary);
+        --pele-margin: var(--pico-typography-spacing-vertical);
+      }
+    {% endapply %}</style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <a class="site-title" href="{{ url(site.home) }}">{{ site.title }}</a>
+        <p>{{ site.baseline }}</p>
+      </hgroup>
+      <div class="header-tools">
+        <nav>
+          <ul>
+          {%- for entry in site.menus.main|default([])|sort_by_weight %}
+            <li><a href="{{ url(entry.url) }}">{{ entry.name }}</a></li>
+          {%- endfor %}
+          </ul>
+        </nav>
+        {{ include('partials/theme-selector.html.twig') }}
+      </div>
+    </header>
+    <main>
+      {%- block content ~%}
+      {{- page.content ~}}
+      {%- endblock content ~%}
+    </main>
+    <footer>
+      {%- set powered_by -%}
+      <a href="{{ cecil.url }}">Cecil</a>, <a href="https://pele.run">Pele</a> &amp; <a href="https://picocss.com">Pico CSS</a>
+      {%- endset ~%}
+      <small>
+        {%- if page.translations|default([])|length >= 1 %}{{ include('partials/languages.html.twig') }} · {% endif -%}
+        {% trans %}Powered by %powered_by%{% endtrans %}
+      </small>
+    </footer>
+  </body>
+</html>

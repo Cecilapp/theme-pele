@@ -1,0 +1,19 @@
+title: Pele
+baseline: Mermaid diagrams rendered to SVG by Pele.
+description: Demo of the Pele component theme for Cecil.
+baseurl: http://localhost:8000/
+theme:
+  - pele
+language: en
+languages:
+  - code: en
+    name: English
+    locale: en_US
+  - code: fr
+    name: Français
+    locale: fr_FR
+    config:
+      baseline: Des diagrammes Mermaid rendus en SVG par Pele.
+menus:
+  main:
+    - {id: github, name: GitHub, url: 'https://github.com/Cecilapp/theme-pele', weight: 10}

@@ -1,0 +1,12 @@
+# Theme options
+pele:
+  enabled: true # render the Mermaid diagrams
+  version: '1.6.0' # Pele library version, loaded from jsDelivr
+  #library: '' # URL of the Pele library (overrides `version`)
+  local: true # download the library at build time and serve it from the site (false to load it from jsDelivr)
+  auto: true # only on pages containing a diagram, detected at build time (false: on every page)
+  selector: 'pre > code.language-mermaid, pre.mermaid' # elements holding the Mermaid source
+  zoom: auto # auto (when the diagram is shrunk to fit), true (always), false, or Pele zoom options (`maxScale`, `controls`…)
+  style: true # default dark colors and diagram container style (false to style it yourself)
+  dark: auto # auto (`data-theme="dark"` or `dark` class on `<html>`, or system preference), attribute (only the attribute or class) or false
+  options: {} # Pele `mount()` options (`fontSize`, `autoDirection`, `directionBreakpoint`, `links`, `config`…)

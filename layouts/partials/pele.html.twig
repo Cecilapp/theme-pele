@@ -1,0 +1,52 @@
+{#- Mermaid diagrams rendered by Pele (https://pele.run), to include in the `head`:
+1. only on pages containing a diagram (detected at build time), unless `pele: true|false` is set in the front matter;
+2. sets the dark colors of the diagrams with the `--pele-*` CSS custom properties, so they follow the color scheme without being re-rendered;
+3. loads the library on first use, and replaces each Mermaid code block by its diagram. ~#}
+{%- set options = site.pele|default({}) ~%}
+{%- set content = '' ~ page.content|default('') ~%}
+{%- set detected = 'language-mermaid' in content or 'class="mermaid"' in content ~%}
+{%- set wanted = page.pele ?? ((options.auto ?? true) ? detected : true) ~%}
+{%- if (site.pele ?? true) is enabled and wanted ~%}
+{%- set library = options.library|default('https://cdn.jsdelivr.net/npm/pele@%s/dist/pele.global.js'|format(options.version|default('1.6.0'))) ~%}
+{%- if options.local ?? true ~%}
+{%- set local = asset(library, {minify: false, ignore_missing: true}) ~%}
+{%- if not local.missing %}{% set library = url(local) %}{% endif ~%}
+{%- endif ~%}
+{%- set labels = {zoomIn: 'Zoom in'|trans, zoomOut: 'Zoom out'|trans, reset: 'Reset zoom'|trans} ~%}
+{%- set zoom = options.zoom ?? 'auto' ~%}
+{%- if zoom is iterable ~%}
+{%- set zoom = {labels: labels}|merge(zoom) ~%}
+{%- elseif zoom is not same as(false) ~%}
+{%- set zoom = {always: zoom is same as(true), labels: labels} ~%}
+{%- endif ~%}
+{%- set config = {
+  library: '' ~ library,
+  selector: options.selector|default('pre > code.language-mermaid, pre.mermaid'),
+  options: (options.options|default({}))|merge({zoom: zoom}),
+} ~%}
+{%- if options.style ?? true ~%}
+{%- set dark %}--pele-bg:#1e1e1e;--pele-fg:#dadada;--pele-muted:#9e9e9e;--pele-line:#dadada;--pele-surface:#2a2a2a;--pele-surface-alt:#333;--pele-border:#6e6e6e;--pele-accent:#7b98e6;--pele-critical:#f07070;--pele-error:#f07070{% endset ~%}
+{%- set mode = options.dark ?? 'auto' %}
+    <style>{% apply minify_css ~%}
+      .pele-diagram {
+        position: relative;
+        margin: 0 0 var(--pele-margin, 1rem);
+      }
+      .pele-diagram > svg {
+        display: block;
+        max-width: 100%;
+        height: auto;
+        margin: 0 auto;
+      }
+      {%- if mode is not same as(false) %}
+      :where(:root[data-theme="dark"], :root.dark) { {{ dark }} }
+      {%- endif %}
+      {%- if mode == 'auto' %}
+      @media (prefers-color-scheme: dark) {
+        :where(:root:not([data-theme="light"]):not(.light)) { {{ dark }} }
+      }
+      {%- endif %}
+    {% endapply %}</style>
+{%- endif %}
+    <script src="{{ url(asset('pele/pele.js')) }}" data-pele-config="{{ config|json_encode(constant('JSON_UNESCAPED_SLASHES') b-or constant('JSON_UNESCAPED_UNICODE'))|e }}" defer></script>
+{%- endif -%}
